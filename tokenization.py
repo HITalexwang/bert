@@ -133,16 +133,18 @@ class BasicTokenizer(object):
   def tokenize(self, text):
     """Tokenizes a piece of text."""
     text = convert_to_unicode(text)
-    text = self._clean_text(text)
+    #text = self._clean_text(text)
     orig_tokens = whitespace_tokenize(text)
     split_tokens = []
     for token in orig_tokens:
       if self.do_lower_case:
         token = token.lower()
-        token = self._run_strip_accents(token)
-      split_tokens.extend(self._run_split_on_punc(token))
+        #token = self._run_strip_accents(token)
+      split_tokens.append(token)
+      #split_tokens.extend(self._run_split_on_punc(token))
 
-    output_tokens = whitespace_tokenize(" ".join(split_tokens))
+    #output_tokens = whitespace_tokenize(" ".join(split_tokens))
+    output_tokens = split_tokens
     return output_tokens
 
   def _run_strip_accents(self, text):

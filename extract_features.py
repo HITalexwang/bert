@@ -22,6 +22,7 @@ import codecs
 import collections
 import json
 import re
+import sys
 
 import modeling
 import tokenization
@@ -203,7 +204,10 @@ def convert_examples_to_features(examples, seq_length, tokenizer):
 
   features = []
   for (ex_index, example) in enumerate(examples):
+    if FLAGS.do_lower_case:
+      example.text_a = example.text_a.lower()
     tokens_a = tokenizer.tokenize(example.text_a)
+    #print (len(tokens_a))
 
     tokens_b = None
     if example.text_b:
@@ -270,10 +274,12 @@ def convert_examples_to_features(examples, seq_length, tokenizer):
     assert len(input_mask) == seq_length
     assert len(input_type_ids) == seq_length
 
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
     if ex_index < 5:
       tf.logging.info("*** Example ***")
       tf.logging.info("unique_id: %s" % (example.unique_id))
-      tf.logging.info("tokens: %s" % " ".join([str(x) for x in tokens]))
+      tf.logging.info("tokens: %s" % " ".join([str(x) for x in tokens]).encode('utf-8'))
       tf.logging.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
       tf.logging.info("input_mask: %s" % " ".join([str(x) for x in input_mask]))
       tf.logging.info(
@@ -339,7 +345,9 @@ def main(_):
 
   tokenizer = tokenization.FullTokenizer(
       vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
-
+  #vocab = tokenization.load_vocab(FLAGS.vocab_file)
+  #tokenizer = tokenization.WordpieceTokenizer(
+  #    vocab=vocab)
   is_per_host = tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2
   run_config = tf.contrib.tpu.RunConfig(
       master=FLAGS.master,
