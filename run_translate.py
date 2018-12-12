@@ -101,6 +101,9 @@ flags.DEFINE_integer("eval_batch_size", 8, "Total batch size for eval.")
 
 flags.DEFINE_float("learning_rate", 2e-5, "The initial learning rate for Adam.")
 
+flags.DEFINE_integer("keep_checkpoint_max", 5,
+                     "The maximum number of saved model checkpoint (0 to save all checkpoints).")
+
 flags.DEFINE_integer("save_checkpoints_steps", 1000,
                      "How often to save the model checkpoint.")
 
@@ -493,6 +496,7 @@ def main(_):
       master=FLAGS.master,
       model_dir=FLAGS.model_dir,
       save_checkpoints_steps=FLAGS.save_checkpoints_steps,
+      keep_checkpoint_max=FLAGS.keep_checkpoint_max,
       tpu_config=tf.contrib.tpu.TPUConfig(
           iterations_per_loop=FLAGS.iterations_per_loop,
           num_shards=FLAGS.num_tpu_cores,
