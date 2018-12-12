@@ -24,42 +24,6 @@ import random
 import tokenization
 import tensorflow as tf
 
-flags = tf.flags
-
-FLAGS = flags.FLAGS
-
-flags.DEFINE_string("input_file", None,
-                    "Input raw text file (or comma-separated list of files).")
-
-flags.DEFINE_string(
-    "output_file", None,
-    "Output TF example file (or comma-separated list of files).")
-
-flags.DEFINE_string("vocab_file", None,
-                    "The vocabulary file that the BERT model was trained on.")
-
-flags.DEFINE_bool(
-    "do_lower_case", True,
-    "Whether to lower case the input text. Should be True for uncased "
-    "models and False for cased models.")
-
-flags.DEFINE_integer("max_seq_length", 128, "Maximum sequence length.")
-
-flags.DEFINE_integer("max_predictions_per_seq", 20,
-                     "Maximum number of masked LM predictions per sequence.")
-
-flags.DEFINE_integer("random_seed", 12345, "Random seed for data generation.")
-
-flags.DEFINE_integer(
-    "dupe_factor", 10,
-    "Number of times to duplicate the input data (with different masks).")
-
-flags.DEFINE_float("masked_lm_prob", 0.15, "Masked LM probability.")
-
-flags.DEFINE_bool("use_masked_lm", False, "Whether to add masked LM loss.")
-
-flags.DEFINE_bool("reverse_trans", True, "Whether to add reversed translation examples.")
-
 class TrainingInstance(object):
   """A single training instance (sentence pair)."""
 
@@ -197,7 +161,7 @@ def create_training_instances(input_files, tokenizer, max_seq_length,
         line0, line1 = line.split('|||')
         tokens0 = tokenizer.tokenize(line0)
         tokens1 = tokenizer.tokenize(line1)
-        if tokens:
+        if tokens0 and tokens1:
           sentences.append((tokens0, tokens1))
 
   vocab_words = list(tokenizer.vocab.keys())
@@ -392,8 +356,8 @@ def main(_):
                                   FLAGS.max_predictions_per_seq, output_files)
 
 
-if __name__ == "__main__":
-  flags.mark_flag_as_required("input_file")
-  flags.mark_flag_as_required("output_file")
-  flags.mark_flag_as_required("vocab_file")
-  tf.app.run()
+#if __name__ == "__main__":
+#  flags.mark_flag_as_required("input_file")
+#  flags.mark_flag_as_required("output_file")
+#  flags.mark_flag_as_required("vocab_file")
+#  tf.app.run()

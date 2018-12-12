@@ -27,7 +27,7 @@ import optimization
 import tokenization
 import tensorflow as tf
 
-from create_translate_data import *
+import create_translate_data
 
 flags = tf.flags
 
@@ -467,9 +467,9 @@ def main(_):
     tf.logging.info("  %s", input_file)
 
   rng = random.Random(FLAGS.random_seed)
-  instances = create_training_instances(
+  instances = create_translate_data.create_training_instances(
       input_files, tokenizer, FLAGS.max_seq_length, FLAGS.dupe_factor,
-      FLAGS. FLAGS.masked_lm_prob, FLAGS.max_predictions_per_seq,
+      FLAGS.masked_lm_prob, FLAGS.max_predictions_per_seq,
       rng, reverse_trans=FLAGS.reverse_trans, use_masked_lm=FLAGS.use_masked_lm)
 
   num_train_steps = None
@@ -524,7 +524,7 @@ def main(_):
   record_file = os.path.join(FLAGS.output_dir, "examples.tf_record")
   tf.logging.info("*** Writing to output file ***")
   tf.logging.info("  %s", record_file)
-  write_instance_to_example_files(instances, tokenizer, FLAGS.max_seq_length,
+  create_translate_data.write_instance_to_example_files(instances, tokenizer, FLAGS.max_seq_length,
                                   FLAGS.max_predictions_per_seq, [record_file])
 
   if FLAGS.do_train:
