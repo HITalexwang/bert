@@ -169,8 +169,11 @@ def model_fn_builder(bert_config, init_checkpoint, layer_indexes, use_tpu,
 
     tvars = tf.trainable_variables()
     scaffold_fn = None
-    (assignment_map, _) = modeling.get_assignment_map_from_checkpoint(
+    (assignment_map, initialized_variable_names) = modeling.get_assignment_map_from_checkpoint(
         tvars, init_checkpoint)
+    #tf.logging.info("**** Assignment Map ****")
+    #for a,b in assignment_map.items():
+    #  tf.logging.info('%s => %s', a, b)
     if use_tpu:
 
       def tpu_scaffold():
@@ -180,6 +183,15 @@ def model_fn_builder(bert_config, init_checkpoint, layer_indexes, use_tpu,
       scaffold_fn = tpu_scaffold
     else:
       tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
+      tf.logging.info("Finished Loading from Checkpoint")
+    
+    tf.logging.info("**** Trainable Variables ****")
+    for var in tvars:
+      init_string = ""
+      if var.name in initialized_variable_names:
+        init_string = ", *INIT_FROM_CKPT*"
+      tf.logging.info("  name = %s, shape = %s%s", var.name, var.shape,
+                      init_string)
 
     all_layers = model.get_all_encoder_layers()
 
